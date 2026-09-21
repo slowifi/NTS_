@@ -8,7 +8,7 @@ import {
 import { maskEntry } from './mask.js';
 
 // 공연 당일 실수로 들어오는 것을 막는 용도일 뿐, 높은 보안이 목적이 아니다.
-const ADMIN_PASSWORD = 'REPLACE_ME';
+const ADMIN_PASSWORD = 'admin';
 
 const gate = document.getElementById('password-gate');
 const passwordForm = document.getElementById('password-form');
