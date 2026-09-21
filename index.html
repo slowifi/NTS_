@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>공연 방명록</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <main>
+    <h1>방명록</h1>
+    <form id="entry-form">
+      <label>
+        이름
+        <input type="text" name="name" maxlength="20" required />
+      </label>
+      <label>
+        전화번호 뒤 4자리
+        <input type="text" name="phone4" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required />
+      </label>
+      <label>
+        메시지
+        <textarea name="message" maxlength="200" required></textarea>
+      </label>
+      <p id="form-error" class="error"></p>
+      <button type="submit">남기기</button>
+    </form>
+
+    <ul id="entry-list"></ul>
+  </main>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>방명록 관리자</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <main>
+    <h1>랜덤 뽑기 (관리자)</h1>
+
+    <section id="password-gate">
+      <form id="password-form">
+        <label>
+          비밀번호
+          <input type="password" name="password" required />
+        </label>
+        <p id="password-error" class="error"></p>
+        <button type="submit">입장</button>
+      </form>
+    </section>
+
+    <section id="admin-panel" hidden>
+      <button id="pick-button" disabled>랜덤 뽑기</button>
+      <div id="pick-result" hidden></div>
+      <h2>전체 목록</h2>
+      <ul id="admin-entry-list"></ul>
+    </section>
+  </main>
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>
