@@ -5,6 +5,7 @@ import {
   onSnapshot,
   query,
   orderBy,
+  limit, // 새로 추가
   serverTimestamp,
 } from 'https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js';
 import { maskEntry } from './mask.js';
@@ -15,13 +16,20 @@ const listEl = document.getElementById('entry-list');
 const errorEl = document.getElementById('form-error');
 
 const entriesRef = collection(db, 'entries');
-const entriesQuery = query(entriesRef, orderBy('createdAt', 'desc'));
+// 최신 글 15개까지만 가져오도록 쿼리 수정
+const entriesQuery = query(entriesRef, orderBy('createdAt', 'desc'), limit(15));
 
 onSnapshot(entriesQuery, (snapshot) => {
   listEl.innerHTML = '';
   snapshot.forEach((docSnap) => {
     const data = docSnap.data();
     const li = document.createElement('li');
+
+    // 카드가 화면 밖으로 나가지 않도록 0~60% 구간 내에서 랜덤 배치
+    const randomX = Math.floor(Math.random() * 60);
+    const randomY = Math.floor(Math.random() * 70);
+    li.style.left = `${randomX}%`;
+    li.style.top = `${randomY}%`;
 
     const label = document.createElement('span');
     label.className = 'entry-label';
@@ -59,6 +67,7 @@ form.addEventListener('submit', async (event) => {
     });
     form.reset();
   } catch (err) {
+    console.error(err);
     errorEl.textContent = '등록에 실패했습니다. 다시 시도해주세요.';
   }
 });

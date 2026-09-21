@@ -52,7 +52,36 @@ input, textarea, button {
   font-weight: bold;
 }
 
-#entry-list, #admin-entry-list {
+/* --- 공개 방명록 컨테이너: 카드들이 떠다닐 캔버스 역할 --- */
+#entry-list {
+  position: relative;
+  width: 100%;
+  min-height: 60vh; /* 화면의 60% 공간을 떠다니는 영역으로 확보 */
+  list-style: none;
+  padding: 0;
+  margin-top: 32px;
+}
+
+/* 공개 방명록 개별 카드: 랜덤 배치를 위한 절대 위치 지정 */
+#entry-list li {
+  position: absolute;
+  width: 220px; /* 카드가 너무 넙적해지지 않도록 크기 고정 */
+  z-index: 10;
+  
+  /* 글래스모피즘 및 애니메이션 효과 */
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  transition: transform 0.15s ease-out;
+  animation: float 4s ease-in-out infinite;
+}
+
+/* --- 관리자 페이지 방명록: 기존대로 세로로 정렬 --- */
+#admin-entry-list {
   list-style: none;
   padding: 0;
   display: flex;
@@ -60,6 +89,15 @@ input, textarea, button {
   gap: 16px;
 }
 
+#admin-entry-list li {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 16px;
+  padding: 16px;
+  transition: transform 0.15s ease-out;
+}
 /* 2. 글래스모피즘(Liquid Glass) & 3. 애니메이션 설정 */
 #entry-list li, #admin-entry-list li {
   /* 유리 느낌의 반투명 배경과 블러 처리 */
