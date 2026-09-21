@@ -21,13 +21,34 @@ const entriesQuery = query(entriesRef, orderBy('createdAt', 'desc'), limit(15));
 
 onSnapshot(entriesQuery, (snapshot) => {
   listEl.innerHTML = '';
+  
+  // 이미 배치된 카드들의 좌표를 저장할 배열
+  const placedPositions = [];
+
   snapshot.forEach((docSnap) => {
     const data = docSnap.data();
     const li = document.createElement('li');
 
-    // 카드가 화면 밖으로 나가지 않도록 0~60% 구간 내에서 랜덤 배치
-    const randomX = Math.floor(Math.random() * 60);
-    const randomY = Math.floor(Math.random() * 70);
+    // 겹침 방지 배치 로직
+    let randomX, randomY;
+    let isOverlapping = true;
+    let attempts = 0;
+
+    // 빈 공간을 찾을 때까지 최대 50번 반복해서 랜덤 좌표 생성
+    while (isOverlapping && attempts < 50) {
+      randomX = Math.floor(Math.random() * 60); // 가로 0~60%
+      randomY = Math.floor(Math.random() * 75); // 세로 0~75%
+
+      // 기존 카드들과의 거리 체크 (가로 35%, 세로 15% 이내로 가까우면 겹친 것으로 판단)
+      isOverlapping = placedPositions.some(pos => 
+        Math.abs(pos.x - randomX) < 35 && Math.abs(pos.y - randomY) < 15
+      );
+      attempts++;
+    }
+    
+    // 최종 결정된 좌표를 저장해 다음 카드 배치 때 참고
+    placedPositions.push({ x: randomX, y: randomY });
+
     li.style.left = `${randomX}%`;
     li.style.top = `${randomY}%`;
 

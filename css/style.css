@@ -9,13 +9,14 @@ body {
   margin: 0 auto;
   padding: 16px;
   
-  /* 포스터 이미지 경로 (images 폴더 안의 poster.jpg) */
+  /* 수정된 배경 설정 */
+  background-color: #121212; /* 여백을 자연스럽게 채울 어두운 배경 */
   background-image: url('../images/poster.jpg');
-  background-size: cover;
-  background-position: center;
+  background-size: contain; /* 포스터가 잘리지 않고 온전히 보이도록 설정 */
+  background-position: center; /* 화면 중앙 정렬 */
+  background-repeat: no-repeat; /* 바둑판처럼 반복되는 현상 방지 */
   background-attachment: fixed;
   
-  /* 텍스트가 잘 보이도록 기본 글자색 지정 */
   color: #ffffff; 
 }
 
