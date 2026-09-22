@@ -3,30 +3,30 @@
   font-family: system-ui, -apple-system, sans-serif;
 }
 
-/* 1. 배경 포스터 설정 */
+/* 배경은 기기 화면 전체(html)에 고정 */
+html {
+  background-color: #121212;
+  background-image: url('../images/poster.jpg');
+  background-size: cover; 
+  background-position: center;
+  background-attachment: fixed;
+}
+
 body {
-  max-width: 640px;
+  max-width: 480px; 
   margin: 0 auto;
   padding: 16px;
-  
-  /* 수정된 배경 설정 */
-  background-color: #121212; /* 여백을 자연스럽게 채울 어두운 배경 */
-  background-image: url('../images/poster.jpg');
-  background-size: contain; /* 포스터가 잘리지 않고 온전히 보이도록 설정 */
-  background-position: center; /* 화면 중앙 정렬 */
-  background-repeat: no-repeat; /* 바둑판처럼 반복되는 현상 방지 */
-  background-attachment: fixed;
-  
   color: #ffffff; 
 }
 
-/* 입력 폼 영역 디자인 다듬기 */
 form {
   display: flex;
   flex-direction: column;
   gap: 8px;
   margin-bottom: 24px;
-  background: rgba(0, 0, 0, 0.4); /* 폼 배경 반투명 어둡게 */
+  /* 폼 배경을 아주 짙고 불투명하게 변경 */
+  background: rgba(15, 15, 15, 0.9); 
+  border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 16px;
   border-radius: 12px;
 }
@@ -63,24 +63,43 @@ input, textarea, button {
   margin-top: 32px;
 }
 
-/* 공개 방명록 개별 카드: 랜덤 배치를 위한 절대 위치 지정 */
 #entry-list li {
   position: absolute;
-  width: 220px; /* 카드가 너무 넙적해지지 않도록 크기 고정 */
+  width: 220px;
   z-index: 10;
   
-  /* 글래스모피즘 및 애니메이션 효과 */
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  /* 배경이 희든 검든 잘 읽히도록 밝고 불투명도를 높인(0.85) 하얀 배경 */
+  background: rgba(255, 255, 255, 0.85); 
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  
+  /* 부드러운 테두리와 가벼운 그림자 */
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   border-radius: 16px;
   padding: 16px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  
   transition: transform 0.15s ease-out;
   animation: float 4s ease-in-out infinite;
 }
 
+/* 공개 방명록 글자 색상 반전 */
+#entry-list .entry-label {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #111111; /* 강렬한 검은색 */
+}
+
+#entry-list .entry-message {
+  margin: 8px 0 0;
+  white-space: pre-wrap;
+  line-height: 1.4;
+  color: #333333; /* 눈이 편안한 짙은 회색 */
+}
+
+/* =========================================
+   2. 관리자 페이지 방명록 (투명도/효과 제거, 실용성 극대화) 
+   ========================================= */
 /* --- 관리자 페이지 방명록: 기존대로 세로로 정렬 --- */
 #admin-entry-list {
   list-style: none;
@@ -89,23 +108,46 @@ input, textarea, button {
   flex-direction: column;
   gap: 16px;
 }
-
 #admin-entry-list li {
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 16px;
+  background: #111111; /* 투명도 0%의 완전한 짙은 색 */
+  border: 1px solid #444444;
+  border-radius: 8px; /* 모서리도 단정하게 */
   padding: 16px;
-  transition: transform 0.15s ease-out;
+  /* 글래스모피즘, 떠다니는 애니메이션 모두 제거 */
+}
+
+/* 관리자 페이지 랜덤 뽑기 결과창 */
+#pick-result {
+  margin-top: 24px;
+  padding: 24px;
+  text-align: center;
+  background: #111111; /* 완전 불투명 */
+  border: 2px solid #666666;
+  border-radius: 8px;
+}
+
+/* 관리자 페이지 글자 색상 (어두운 무대 위 가독성 확보) */
+#admin-entry-list .entry-label,
+#pick-result .pick-label {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #ffffff; /* 순백색 */
+}
+
+#admin-entry-list .entry-message,
+#pick-result .pick-message {
+  margin: 8px 0 0;
+  white-space: pre-wrap;
+  line-height: 1.4;
+  color: #dddddd; /* 밝은 회색 */
 }
 /* 2. 글래스모피즘(Liquid Glass) & 3. 애니메이션 설정 */
-#entry-list li, #admin-entry-list li {
+#entry-list li {
   /* 유리 느낌의 반투명 배경과 블러 처리 */
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px); /* Safari 호환 */
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.4);
   border-radius: 16px;
   padding: 16px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
@@ -116,24 +158,37 @@ input, textarea, button {
   /* 구름처럼 떠다니는 애니메이션 적용 */
   animation: float 4s ease-in-out infinite;
 }
+/* 2. 글래스모피즘(Liquid Glass) & 3. 애니메이션 설정 */
+#admin-entry-list li {
+  /* 유리 느낌의 반투명 배경과 블러 처리 */
+  background: rgba(55, 55, 55, 1);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+}
 
 /* 터치/클릭 시 살짝 눌리는 액션 */
 #entry-list li:active, #admin-entry-list li:active {
   transform: scale(0.96);
 }
 
+
+/* --- 글자 색상 대비 극대화 --- */
 .entry-label {
   font-weight: bold;
   font-size: 1.1rem;
-  color: #f1c40f; /* 이름 강조색 (노란색 톤) */
+  /* 흑백 대비 가장 눈에 띄는 형광 시안(하늘색) 포인트 컬러 */
+  color: #00e5ff; 
 }
 
 .entry-message {
   margin: 8px 0 0;
   white-space: pre-wrap;
   line-height: 1.4;
+  /* 메시지는 눈이 편안하면서도 또렷한 흰색 유지 */
+  color: #ffffff; 
 }
-
 /* 관리자 페이지 랜덤 뽑기 결과창 글래스 디자인 */
 #pick-result {
   margin-top: 24px;
