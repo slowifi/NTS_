@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /entries/{entryId} {
+      allow read: if true;
+      // 문서 ID를 이름_전화4자리로 강제하고 덮어쓰기를 막아 1인 1글을 보장한다.
+      allow create: if
+        request.resource.data.keys().hasOnly(['name', 'phone4', 'message', 'createdAt']) &&
+        request.resource.data.name is string &&
+        request.resource.data.name.size() > 0 &&
+        request.resource.data.name.size() <= 20 &&
+        !request.resource.data.name.matches('.*/.*') &&
+        request.resource.data.phone4 is string &&
+        request.resource.data.phone4.matches('^[0-9]{4}$') &&
+        request.resource.data.message is string &&
+        request.resource.data.message.size() > 0 &&
+        request.resource.data.message.size() <= 200 &&
+        request.resource.data.createdAt == request.time &&
+        entryId == request.resource.data.name + '_' + request.resource.data.phone4;
+      allow update, delete: if false;
+    }
+
+    match /picks/{entryId} {
+      allow read: if true;
+      // 같은 글을 두 번 기록하면 덮어쓰기로 간주되어 거부된다 → 중복 당첨 불가.
+      allow create: if
+        request.resource.data.keys().hasOnly(['pickedAt']) &&
+        request.resource.data.pickedAt == request.time &&
+        exists(/databases/$(database)/documents/entries/$(entryId));
+      allow update, delete: if false;
+    }
+  }
+}

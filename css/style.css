@@ -168,6 +168,22 @@ input, textarea, button {
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 }
 
+/* 이미 당첨된 글: 흐리게 + 배지 */
+#admin-entry-list li.picked {
+  opacity: 0.45;
+}
+
+.badge {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  background: #f1c40f;
+  color: #000000;
+  vertical-align: middle;
+}
+
 /* 터치/클릭 시 살짝 눌리는 액션 */
 #entry-list li:active, #admin-entry-list li:active {
   transform: scale(0.96);

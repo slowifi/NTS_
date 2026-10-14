@@ -1,15 +1,19 @@
+import { normalizeName } from './entry-id.js';
+
 export const NAME_MAX_LENGTH = 20;
 export const MESSAGE_MAX_LENGTH = 200;
 
 export function validateEntry({ name, phone4, message }) {
   const errors = {};
-  const trimmedName = (name ?? '').trim();
+  const normalizedName = normalizeName(name);
   const trimmedMessage = (message ?? '').trim();
 
-  if (trimmedName.length === 0) {
+  if (normalizedName.length === 0) {
     errors.name = '이름을 입력해주세요.';
-  } else if (trimmedName.length > NAME_MAX_LENGTH) {
+  } else if (normalizedName.length > NAME_MAX_LENGTH) {
     errors.name = `이름은 ${NAME_MAX_LENGTH}자 이하로 입력해주세요.`;
+  } else if (normalizedName.includes('/')) {
+    errors.name = '이름에 / 문자는 쓸 수 없어요.';
   }
 
   if (!/^\d{4}$/.test(phone4 ?? '')) {

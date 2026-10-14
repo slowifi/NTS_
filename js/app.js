@@ -1,7 +1,9 @@
 import { db } from './firebase-config.js';
 import {
   collection,
-  addDoc,
+  doc,
+  getDoc,
+  setDoc,
   onSnapshot,
   query,
   orderBy,
@@ -9,9 +11,13 @@ import {
   serverTimestamp,
 } from 'https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js';
 import { maskEntry } from './mask.js';
+import { normalizeName, entryIdFor } from './entry-id.js';
 import { validateEntry } from './validate.js';
 
+const DUPLICATE_MESSAGE = '이미 방명록을 남기셨어요.';
+
 const form = document.getElementById('entry-form');
+const submitButton = form.querySelector('button[type="submit"]');
 const listEl = document.getElementById('entry-list');
 const errorEl = document.getElementById('form-error');
 
@@ -79,9 +85,19 @@ form.addEventListener('submit', async (event) => {
     return;
   }
 
+  // 같은 이름+번호는 같은 문서 ID가 되고, 보안 규칙이 덮어쓰기를 막아 1인 1글이 된다.
+  const entryRef = doc(db, 'entries', entryIdFor(name, phone4));
+  submitButton.disabled = true;
+
   try {
-    await addDoc(entriesRef, {
-      name: name.trim(),
+    const existing = await getDoc(entryRef);
+    if (existing.exists()) {
+      errorEl.textContent = DUPLICATE_MESSAGE;
+      return;
+    }
+
+    await setDoc(entryRef, {
+      name: normalizeName(name),
       phone4,
       message: message.trim(),
       createdAt: serverTimestamp(),
@@ -89,6 +105,11 @@ form.addEventListener('submit', async (event) => {
     form.reset();
   } catch (err) {
     console.error(err);
-    errorEl.textContent = '등록에 실패했습니다. 다시 시도해주세요.';
+    // 확인과 저장 사이에 같은 사람이 먼저 저장하면 규칙이 덮어쓰기로 보고 거부한다.
+    errorEl.textContent = err.code === 'permission-denied'
+      ? DUPLICATE_MESSAGE
+      : '등록에 실패했습니다. 다시 시도해주세요.';
+  } finally {
+    submitButton.disabled = false;
   }
 });
