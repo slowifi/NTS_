@@ -168,6 +168,13 @@ input, textarea, button {
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
 }
 
+/* 방금 내가 쓴 카드: 제출칸 바로 아래 가운데 고정, 다른 카드보다 위에 */
+#entry-list li.mine {
+  z-index: 11;
+  border-color: #00e5ff;
+  box-shadow: 0 0 18px rgba(0, 229, 255, 0.5);
+}
+
 /* 이미 당첨된 글: 흐리게 + 배지 */
 #admin-entry-list li.picked {
   opacity: 0.45;
