@@ -170,6 +170,8 @@ input, textarea, button {
 
 /* 방금 내가 쓴 카드: 제출칸 바로 아래 가운데 고정, 다른 카드보다 위에 */
 #entry-list li.mine {
+  left: calc(50% - 110px); /* 카드 폭 220px의 절반 */
+  top: 0;
   z-index: 11;
   border-color: #00e5ff;
   box-shadow: 0 0 18px rgba(0, 229, 255, 0.5);

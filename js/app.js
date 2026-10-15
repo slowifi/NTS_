@@ -13,7 +13,6 @@ import {
 import { maskEntry } from './mask.js';
 import { normalizeName, entryIdFor } from './entry-id.js';
 import { validateEntry } from './validate.js';
-import { layoutCards } from './layout.js';
 
 const DUPLICATE_MESSAGE = '이미 방명록을 남기셨어요.';
 const MY_ENTRY_KEY = 'myEntryId';
@@ -25,7 +24,6 @@ const errorEl = document.getElementById('form-error');
 
 let latestEntries = [];
 let myEntry = null;
-let lastWidth = 0;
 
 function loadMyEntryId() {
   try {
@@ -61,37 +59,52 @@ function createCard(entry, isMine) {
 }
 
 function render({ scrollToMine = false } = {}) {
-  const others = latestEntries.filter((entry) => entry.id !== myEntry?.id);
-  const cards = myEntry ? [myEntry, ...others] : others;
-
   listEl.innerHTML = '';
-  // 실제 크기를 재야 겹침 없이 배치할 수 있으므로, 숨긴 채로 먼저 그린다.
-  const items = cards.map((entry) => {
-    const li = createCard(entry, entry === myEntry);
-    li.style.visibility = 'hidden';
-    listEl.appendChild(li);
-    return li;
-  });
 
-  const { positions, height } = layoutCards(
-    items.map((li) => ({ width: li.offsetWidth, height: li.offsetHeight })),
-    {
-      containerWidth: listEl.clientWidth,
-      minHeight: parseFloat(getComputedStyle(listEl).minHeight) || 0,
-      pinnedIndex: myEntry ? 0 : -1,
-    },
-  );
+  // 이미 배치된 카드들의 좌표(%)를 저장할 배열
+  const placedPositions = [];
 
-  items.forEach((li, i) => {
-    li.style.left = `${positions[i].x}px`;
-    li.style.top = `${positions[i].y}px`;
-    li.style.visibility = '';
-  });
-  listEl.style.height = `${height}px`;
-  lastWidth = listEl.clientWidth;
+  let myCard = null;
+  if (myEntry) {
+    // 내 카드 위치는 CSS(#entry-list li.mine)가 맨 위 가운데로 고정한다.
+    myCard = createCard(myEntry, true);
+    listEl.appendChild(myCard);
+    const width = listEl.clientWidth || 1;
+    placedPositions.push({ x: Math.round(((width / 2 - 110) / width) * 100), y: 0 });
+  }
 
-  if (scrollToMine && myEntry) {
-    items[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  latestEntries
+    .filter((entry) => entry.id !== myEntry?.id)
+    .forEach((entry) => {
+      const li = createCard(entry, false);
+
+      // 겹침 방지 배치 로직
+      let randomX, randomY;
+      let isOverlapping = true;
+      let attempts = 0;
+
+      // 빈 공간을 찾을 때까지 최대 50번 반복해서 랜덤 좌표 생성
+      while (isOverlapping && attempts < 50) {
+        randomX = Math.floor(Math.random() * 60); // 가로 0~60%
+        randomY = Math.floor(Math.random() * 75); // 세로 0~75%
+
+        // 기존 카드들과의 거리 체크 (가로 35%, 세로 15% 이내로 가까우면 겹친 것으로 판단)
+        isOverlapping = placedPositions.some(pos =>
+          Math.abs(pos.x - randomX) < 35 && Math.abs(pos.y - randomY) < 15
+        );
+        attempts++;
+      }
+
+      // 최종 결정된 좌표를 저장해 다음 카드 배치 때 참고
+      placedPositions.push({ x: randomX, y: randomY });
+
+      li.style.left = `${randomX}%`;
+      li.style.top = `${randomY}%`;
+      listEl.appendChild(li);
+    });
+
+  if (scrollToMine && myCard) {
+    myCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }
 
@@ -118,11 +131,6 @@ if (storedId) {
     })
     .catch((err) => console.error(err));
 }
-
-// 모바일은 스크롤할 때 주소창이 접히면서 높이만 바뀌므로, 폭이 바뀔 때만 다시 배치한다.
-window.addEventListener('resize', () => {
-  if (listEl.clientWidth !== lastWidth) render();
-});
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
